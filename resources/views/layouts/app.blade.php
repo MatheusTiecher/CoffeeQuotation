@@ -32,7 +32,7 @@
             @endif
 
             <!-- Page Content -->
-            <main>
+            <main class="py-4">
                 {{ $slot }}
             </main>
         </div>
