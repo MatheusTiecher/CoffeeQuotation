@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Livewire\Product\{ProductCreate, ProductEdit, ProductIndex};
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,5 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', ProductIndex::class)->name('index');
         Route::get('/create', ProductCreate::class)->name('create');
         Route::get('/{product}/edit', ProductEdit::class)->name('edit');
+        // route get image
+        Route::get('/{product}/image', function (Product $product) {
+            return response()->file(storage_path('app/public/' . $product->hash_image));
+        })->name('image');
     });
 });

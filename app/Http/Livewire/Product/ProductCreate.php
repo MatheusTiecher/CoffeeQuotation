@@ -4,9 +4,12 @@ namespace App\Http\Livewire\Product;
 
 use Livewire\Component;
 use App\Models\Product;
+use Livewire\WithFileUploads;
 
 class ProductCreate extends Component
 {
+    use WithFileUploads;
+
     public $description;
     public $observation;
     public $price_default;
@@ -20,11 +23,16 @@ class ProductCreate extends Component
         'price_default' => 'required',
         'quantity_per_box' => 'required',
         'yield_per_box' => 'required',
+        'hash_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
     ];
 
     public function createProduct()
     {
         $this->validate();
+
+        if($this->hash_image) {
+            $this->hash_image = $this->hash_image->store('products', 'public');
+        }
 
         Product::create([
             'description' => $this->description,

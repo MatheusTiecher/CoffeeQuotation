@@ -3,10 +3,14 @@
 namespace App\Http\Livewire\Product;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ProductEdit extends Component
 {
+    use WithFileUploads;
+
     public Product $product;
 
     public $description;
@@ -22,6 +26,7 @@ class ProductEdit extends Component
         'price_default' => 'required',
         'quantity_per_box' => 'required',
         'yield_per_box' => 'required',
+        'hash_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048|nullable',
     ];
 
     public function mount()
@@ -38,13 +43,21 @@ class ProductEdit extends Component
     {
         $this->validate();
 
+        if($this->hash_image) {
+            if(Storage::disk('public')->exists($this->product->hash_image)) {
+                Storage::disk('public')->delete($this->product->hash_image);
+            }
+
+            $this->hash_image = $this->hash_image->store('products', 'public');
+        }
+
         $this->product->update([
             'description' => $this->description,
             'observation' => $this->observation,
             'price_default' => $this->price_default,
             'quantity_per_box' => $this->quantity_per_box,
             'yield_per_box' => $this->yield_per_box,
-            'hash_image' => $this->hash_image,
+            'hash_image' => $this->hash_image ?? $this->product->hash_image,
         ]);
 
         session()->flash('message', 'Product updated successfully.');
